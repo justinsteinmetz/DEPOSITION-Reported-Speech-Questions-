@@ -1,6 +1,6 @@
 # DEPOSITION ROOM
 
-https://justinsteinmetz.github.io/DEPOSITION-Reported-Speech-Questions/
+https://justinsteinmetz.github.io/DEPOSITION_Reported_-Speech_Questions/
 
 An interactive grammar tool for practising **reported questions** in English. Students are cast as witnesses in a deposition. An unseen interrogator asked them questions. Their job: report those questions accurately.
 
