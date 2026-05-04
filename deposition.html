@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEPOSITION ROOM</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f0ead6;
+    --ink: #1a1008;
+    --red: #8b1a1a;
+    --stamp: #6b2020;
+    --fade: #8a7a60;
+    --highlight: #c8a84b;
+    --suspicion: 0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1410;
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 30% 20%, rgba(80,40,10,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(40,10,10,0.5) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .room {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 780px;
+  }
+
+  /* HEADER TAPE */
+  .tape {
+    background: var(--highlight);
+    color: var(--ink);
+    font-family: 'Special Elite', cursive;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-align: center;
+    padding: 6px 20px;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  /* MAIN DOCUMENT */
+  .document {
+    background: var(--paper);
+    color: var(--ink);
+    padding: 40px 44px;
+    position: relative;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.8), inset 0 0 60px rgba(160,130,80,0.15);
+    transition: filter 0.8s, transform 0.3s;
+  }
+
+  .document::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 27px,
+        rgba(0,0,0,0.04) 27px,
+        rgba(0,0,0,0.04) 28px
+      );
+    pointer-events: none;
+  }
+
+  .document::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(139,26,26,0.6), transparent);
+  }
+
+  /* CASE HEADER */
+  .case-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .case-label {
+    font-family: 'Special Elite', cursive;
+  }
+
+  .case-label .case-num {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--fade);
+    text-transform: uppercase;
+  }
+
+  .case-label .case-title {
+    font-size: 22px;
+    line-height: 1.1;
+    margin-top: 4px;
+  }
+
+  .case-label .case-sub {
+    font-size: 11px;
+    color: var(--fade);
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  .suspicion-meter {
+    text-align: right;
+  }
+
+  .suspicion-meter .sus-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--fade);
+    margin-bottom: 4px;
+  }
+
+  .sus-bars {
+    display: flex;
+    gap: 3px;
+    justify-content: flex-end;
+  }
+
+  .sus-bar {
+    width: 14px;
+    height: 20px;
+    border: 1.5px solid var(--ink);
+    background: transparent;
+    transition: background 0.5s;
+  }
+
+  .sus-bar.filled {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  /* PHASE DISPLAY */
+  .phase-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .phase-tag {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border: 1px solid var(--fade);
+    padding: 3px 8px;
+    color: var(--fade);
+  }
+
+  .phase-progress {
+    font-size: 10px;
+    color: var(--fade);
+    letter-spacing: 1px;
+  }
+
+  /* QUESTION DISPLAY */
+  .interrogator-block {
+    margin-bottom: 28px;
+  }
+
+  .interrogator-label {
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+
+  .direct-question {
+    font-family: 'Special Elite', cursive;
+    font-size: 19px;
+    line-height: 1.4;
+    color: var(--ink);
+    padding: 16px 20px;
+    border-left: 3px solid var(--ink);
+    background: rgba(0,0,0,0.04);
+    position: relative;
+    transition: all 0.4s;
+  }
+
+  .direct-question .speaker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--fade);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* INSTRUCTION */
+  .instruction-block {
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    border: 1px dashed rgba(0,0,0,0.2);
+  }
+
+  .instruction-block p {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    color: var(--fade);
+    line-height: 1.6;
+  }
+
+  .instruction-block .stem {
+    font-family: 'Special Elite', cursive;
+    font-size: 14px;
+    color: var(--ink);
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  /* INPUT AREA */
+  .response-block {
+    margin-bottom: 24px;
+  }
+
+  .response-label {
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--fade);
+    margin-bottom: 8px;
+  }
+
+  .response-input {
+    width: 100%;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--ink);
+    padding: 8px 0;
+    color: var(--ink);
+    outline: none;
+    letter-spacing: 0.5px;
+    transition: border-color 0.3s;
+  }
+
+  .response-input::placeholder {
+    color: rgba(0,0,0,0.25);
+    font-style: italic;
+  }
+
+  .response-input:focus {
+    border-bottom-color: var(--red);
+  }
+
+  /* SUBMIT */
+  .submit-btn {
+    font-family: 'Special Elite', cursive;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-right: 12px;
+    min-width: 120px;
+  }
+
+  .submit-btn:hover {
+    background: var(--red);
+  }
+
+  .skip-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--fade);
+    border: 1px solid var(--fade);
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .skip-btn:hover {
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+
+  /* FEEDBACK */
+  .feedback-block {
+    margin-top: 20px;
+    min-height: 60px;
+    transition: all 0.3s;
+  }
+
+  .feedback-correct {
+    border-left: 3px solid #2d6a2d;
+    padding: 12px 16px;
+    background: rgba(45,106,45,0.08);
+  }
+
+  .feedback-correct .fb-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #2d6a2d;
+    margin-bottom: 4px;
+  }
+
+  .feedback-wrong {
+    border-left: 3px solid var(--red);
+    padding: 12px 16px;
+    background: rgba(139,26,26,0.06);
+  }
+
+  .feedback-wrong .fb-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 4px;
+  }
+
+  .feedback-text {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .feedback-correct-form {
+    font-family: 'Special Elite', cursive;
+    font-size: 14px;
+    color: var(--ink);
+    margin-top: 6px;
+  }
+
+  /* HINT */
+  .hint-tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 2px 6px;
+    border: 1px solid var(--highlight);
+    color: var(--highlight);
+    background: rgba(200,168,75,0.08);
+    margin-top: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .hint-tag:hover { background: rgba(200,168,75,0.2); }
+
+  .hint-content {
+    display: none;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    color: var(--fade);
+    margin-top: 8px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .hint-content.visible { display: block; }
+
+  /* ANNOTATIONS */
+  .annotation {
+    position: absolute;
+    font-family: 'Special Elite', cursive;
+    font-size: 11px;
+    color: var(--red);
+    opacity: 0.6;
+    transform: rotate(-12deg);
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+
+  /* SCORE FOOTER */
+  .doc-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0,0,0,0.15);
+  }
+
+  .score-display {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--fade);
+    text-transform: uppercase;
+  }
+
+  .score-num {
+    font-family: 'Special Elite', cursive;
+    font-size: 18px;
+    color: var(--ink);
+  }
+
+  /* REDACTED STAMP */
+  .stamp {
+    font-family: 'Special Elite', cursive;
+    font-size: 28px;
+    color: var(--red);
+    border: 3px solid var(--red);
+    padding: 4px 12px;
+    opacity: 0;
+    display: inline-block;
+    transform: rotate(-8deg);
+    letter-spacing: 3px;
+    transition: opacity 0.6s;
+  }
+
+  /* FINAL SCREEN */
+  .final-screen {
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .final-screen.visible { display: block; }
+
+  .final-verdict {
+    font-family: 'Special Elite', cursive;
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  .verdict-cleared { color: #2d6a2d; }
+  .verdict-detained { color: var(--red); }
+  .verdict-released { color: var(--fade); }
+
+  .final-stats {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--fade);
+    line-height: 2;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .final-stats .stat-val {
+    color: var(--ink);
+    font-size: 15px;
+  }
+
+  .replay-btn {
+    font-family: 'Special Elite', cursive;
+    font-size: 12px;
+    letter-spacing: 3px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 12px 28px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  /* SUSPICION SHAKE */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-4px) rotate(-0.3deg); }
+    40% { transform: translateX(4px) rotate(0.3deg); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+
+  .shaking { animation: shake 0.5s ease; }
+
+  /* INTRO */
+  .intro-screen {
+    text-align: left;
+    padding: 10px 0 20px;
+  }
+
+  .intro-title {
+    font-family: 'Special Elite', cursive;
+    font-size: 28px;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .intro-body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--fade);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    max-width: 520px;
+  }
+
+  .intro-rules {
+    margin-bottom: 24px;
+  }
+
+  .intro-rule {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    align-items: flex-start;
+  }
+
+  .rule-num {
+    font-family: 'Special Elite', cursive;
+    font-size: 13px;
+    color: var(--red);
+    min-width: 20px;
+    margin-top: 1px;
+  }
+
+  .rule-text {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .rule-text code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    background: rgba(0,0,0,0.07);
+    padding: 1px 5px;
+  }
+
+  .start-btn {
+    font-family: 'Special Elite', cursive;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 12px 30px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .start-btn:hover { background: var(--red); }
+
+  /* GRAMMAR REFERENCE STRIP */
+  .grammar-strip {
+    background: rgba(0,0,0,0.06);
+    border-top: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .grammar-rule {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: var(--fade);
+  }
+
+  .grammar-rule strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* Instability effects */
+  .unstable-1 { filter: contrast(108%) sepia(5%); }
+  .unstable-2 { filter: contrast(115%) sepia(12%) hue-rotate(2deg); }
+  .unstable-3 { filter: contrast(125%) sepia(20%) hue-rotate(5deg); }
+
+</style>
+</head>
+<body>
+
+<div class="room">
+  <div class="tape">CLASSIFIED — OFFICIAL DEPOSITION — CASE FILE 8B</div>
+
+  <div class="document" id="mainDoc">
+
+    <!-- INTRO SCREEN -->
+    <div class="intro-screen" id="introScreen">
+      <div class="case-header" style="margin-bottom:20px">
+        <div class="case-label">
+          <div class="case-num">Case No. 8B-04 · Reported Speech Division</div>
+          <div class="case-title">DEPOSITION<br>ROOM</div>
+          <div class="case-sub">Witness Processing Unit · Session Active</div>
+        </div>
+        <div class="suspicion-meter">
+          <div class="sus-label">Status</div>
+          <div style="font-family:'Special Elite',cursive; font-size:13px; color:#2d6a2d; margin-top:4px;">PENDING</div>
+        </div>
+      </div>
+
+      <div class="intro-body">
+        You are a witness. An interrogator asked you questions. Now you must report — accurately — what they asked.<br><br>
+        The interrogator is watching. Every error is noted. Too many errors and your account becomes unreliable.
+      </div>
+
+      <div class="intro-rules">
+        <div class="intro-rule">
+          <span class="rule-num">I.</span>
+          <span class="rule-text"><strong>Change the verb tense.</strong> Present → past. Past → past perfect.<br>
+          <code>"Are you here?"</code> → <em>they asked if I was there</em></span>
+        </div>
+        <div class="intro-rule">
+          <span class="rule-num">II.</span>
+          <span class="rule-text"><strong>No question word order.</strong> No inversion after the question word.<br>
+          <code>"Where do you live?"</code> → <em>they asked where I lived</em> — not <em>where did I live</em></span>
+        </div>
+        <div class="intro-rule">
+          <span class="rule-num">III.</span>
+          <span class="rule-text"><strong>Yes/no questions need if or whether.</strong><br>
+          <code>"Are you nervous?"</code> → <em>they asked if I was nervous</em></span>
+        </div>
+      </div>
+
+      <button class="start-btn" onclick="startSession()">Enter Deposition Room</button>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" style="display:none">
+
+      <div class="case-header">
+        <div class="case-label">
+          <div class="case-num">Case No. 8B-04 · Reported Speech Division</div>
+          <div class="case-title">DEPOSITION ROOM</div>
+          <div class="case-sub">Witness Processing Unit · Session Active</div>
+        </div>
+        <div class="suspicion-meter">
+          <div class="sus-label">Suspicion Level</div>
+          <div class="sus-bars">
+            <div class="sus-bar" id="bar0"></div>
+            <div class="sus-bar" id="bar1"></div>
+            <div class="sus-bar" id="bar2"></div>
+            <div class="sus-bar" id="bar3"></div>
+            <div class="sus-bar" id="bar4"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grammar-strip">
+        <div class="grammar-rule"><strong>tense shift:</strong> is→was · are→were · did→had done · will→would</div>
+        <div class="grammar-rule"><strong>wh-q:</strong> they asked where I <u>lived</u> (not where did I live)</div>
+        <div class="grammar-rule"><strong>yes/no:</strong> they asked <u>if/whether</u> I was...</div>
+      </div>
+
+      <div class="phase-display">
+        <div class="phase-tag" id="phaseTag">Round 1</div>
+        <div class="phase-progress" id="phaseProgress">Question 1 of 10</div>
+      </div>
+
+      <div class="interrogator-block">
+        <div class="interrogator-label">The Interrogator asked:</div>
+        <div class="direct-question" id="directQuestion">
+          <span class="speaker">Interrogator</span>
+          <span id="questionText">Loading...</span>
+        </div>
+      </div>
+
+      <div class="instruction-block">
+        <p id="instructionText">Report what they asked. Complete the sentence:</p>
+        <div class="stem" id="stemText">They asked me ___________.</div>
+      </div>
+
+      <div class="response-block">
+        <div class="response-label">Your deposition:</div>
+        <input 
+          type="text" 
+          class="response-input" 
+          id="responseInput"
+          placeholder="complete the sentence..."
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+
+      <div>
+        <button class="submit-btn" id="submitBtn" onclick="checkAnswer()">Submit</button>
+        <button class="skip-btn" onclick="skipQuestion()">Show answer</button>
+        <span class="hint-tag" onclick="toggleHint()" id="hintToggle">? hint</span>
+        <div class="hint-content" id="hintContent"></div>
+      </div>
+
+      <div class="feedback-block" id="feedbackBlock"></div>
+
+      <div class="doc-footer">
+        <div class="score-display">
+          Accurate: <span class="score-num" id="scoreNum">0</span> / <span id="totalNum">0</span>
+        </div>
+        <div class="stamp" id="stampEl">UNRELIABLE</div>
+      </div>
+    </div>
+
+    <!-- FINAL SCREEN -->
+    <div class="final-screen" id="finalScreen">
+      <div class="case-header">
+        <div class="case-label">
+          <div class="case-num">Case No. 8B-04 · Session Closed</div>
+          <div class="case-title">DEPOSITION<br>COMPLETE</div>
+        </div>
+      </div>
+
+      <div id="verdictDisplay" class="final-verdict"></div>
+      <div class="final-stats" id="finalStats"></div>
+      <button class="replay-btn" onclick="resetGame()">New Session</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    direct: "Where do you live?",
+    stem: "They asked me where",
+    answer: ["i lived", "i lived."],
+    hint: "wh-question → no inversion. 'do you live' → past tense, no auxiliary",
+    type: "wh",
+    speaker: "Interrogator"
+  },
+  {
+    direct: "Are you telling the truth?",
+    stem: "They asked me if",
+    answer: ["i was telling the truth", "i was telling the truth."],
+    hint: "yes/no question → use 'if'. Present continuous → past continuous",
+    type: "yesno",
+    speaker: "Interrogator"
+  },
+  {
+    direct: "What time did you leave the building?",
+    stem: "They asked me what time",
+    answer: ["i had left the building", "i had left the building.", "i left the building", "i left the building."],
+    hint: "wh-question. Past simple → past perfect (had left)",
+    type: "wh",
+    speaker: "Interrogator"
+  },
+  {
+    direct: "Do you know the other witness?",
+    stem: "They asked me if",
+    answer: ["i knew the other witness", "i knew the other witness."],
+    hint: "yes/no question. Present simple → past simple",
+    type: "yesno",
+    speaker: "Interrogator"
+  },
+  {
+    direct: "How long have you been waiting?",
+    stem: "They asked me how long",
+    answer: ["i had been waiting", "i had been waiting."],
+    hint: "wh-question. Present perfect continuous → past perfect continuous",
+    type: "wh",
+    speaker: "Interrogator"
+  },
+  {
+    direct: "Will you come back tomorrow?",
+    stem: "They asked me if",
+    answer: ["i would come back the next day", "i would come back tomorrow", "i would return the next day", "i would come back the following day"],
+    hint: "yes/no question. 'will' → 'would'. Time reference may shift too.",
+    type: "yesno",
+    speaker: "Interrogator"
+  },
+  {
+    direct: "Why did you change your story?",
+    stem: "They asked me why",
+    answer: ["i had changed my story", "i had changed my story.", "i changed my story", "i changed my story."],
+    hint: "wh-question. Past simple → past perfect. No inversion.",
+    type: "wh",
+    speaker: "Interrogator"
+  },
+  {
+    direct: "Have you spoken to anyone about this?",
+    stem: "They asked me if",
+    answer: ["i had spoken to anyone about it", "i had spoken to anyone about that", "i had spoken to anyone about this"],
+    hint: "yes/no question. Present perfect → past perfect",
+    type: "yesno",
+    speaker: "Interrogator"
+  },
+  {
+    direct: "Who was in the room with you?",
+    stem: "They asked me who",
+    answer: ["was in the room with me", "had been in the room with me", "was in the room with me."],
+    hint: "wh-question with 'who' as subject — no inversion needed at all",
+    type: "wh",
+    speaker: "Interrogator"
+  },
+  {
+    direct: "Can you describe what you saw?",
+    stem: "They asked me if",
+    answer: ["i could describe what i had seen", "i could describe what i saw", "i could describe what i'd seen"],
+    hint: "yes/no question. 'can' → 'could'. Embedded clause: 'what I saw' → 'what I had seen'",
+    type: "yesno",
+    speaker: "Interrogator"
+  }
+];
+
+let currentQ = 0;
+let score = 0;
+let total = 0;
+let suspicion = 0;
+let hintVisible = false;
+let nextPending = false;
+
+function startSession() {
+  document.getElementById('introScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+  shuffleQuestions();
+  loadQuestion();
+}
+
+function shuffleQuestions() {
+  for (let i = questions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [questions[i], questions[j]] = [questions[j], questions[i]];
+  }
+}
+
+function loadQuestion() {
+  if (currentQ >= questions.length) {
+    showFinal();
+    return;
+  }
+
+  const q = questions[currentQ];
+  document.getElementById('questionText').textContent = '"' + q.direct + '"';
+  document.getElementById('stemText').textContent = q.stem + ' ___________';
+  document.getElementById('responseInput').value = '';
+  document.getElementById('feedbackBlock').innerHTML = '';
+  document.getElementById('hintContent').classList.remove('visible');
+  document.getElementById('hintContent').textContent = q.hint;
+  document.getElementById('hintToggle').textContent = '? hint';
+  document.getElementById('submitBtn').textContent = 'Submit';
+  hintVisible = false;
+  nextPending = false;
+
+  document.getElementById('phaseTag').textContent = 
+    currentQ < 4 ? 'Phase 1' : currentQ < 7 ? 'Phase 2' : 'Final Phase';
+  document.getElementById('phaseProgress').textContent = 
+    'Question ' + (currentQ + 1) + ' of ' + questions.length;
+
+  setTimeout(() => {
+    document.getElementById('responseInput').focus();
+  }, 100);
+}
+
+function normalise(str) {
+  return str.toLowerCase()
+    .trim()
+    .replace(/['']/g, "'")
+    .replace(/\s+/g, ' ')
+    .replace(/[.,!?]$/, '');
+}
+
+function checkAnswer() {
+  if (nextPending) { advanceQuestion(); return; }
+
+  const raw = document.getElementById('responseInput').value;
+  if (!raw.trim()) return;
+
+  const input = normalise(raw);
+  const q = questions[currentQ];
+  const correct = q.answer.some(a => normalise(a) === input || input.includes(normalise(a)));
+
+  total++;
+  document.getElementById('totalNum').textContent = total;
+
+  if (correct) {
+    score++;
+    document.getElementById('scoreNum').textContent = score;
+    showFeedbackCorrect(q.stem + ' ' + q.answer[0]);
+  } else {
+    suspicion++;
+    updateSuspicion();
+    showFeedbackWrong(q, input, raw);
+  }
+
+  nextPending = true;
+  document.getElementById('submitBtn').textContent = 'Next →';
+  document.getElementById('responseInput').blur();
+}
+
+function showFeedbackCorrect(correct) {
+  document.getElementById('feedbackBlock').innerHTML = `
+    <div class="feedback-correct">
+      <div class="fb-label">✓ Accepted — account consistent</div>
+      <div class="feedback-correct-form">${correct}</div>
+    </div>
+  `;
+}
+
+function showFeedbackWrong(q, input, raw) {
+  const doc = document.getElementById('mainDoc');
+  doc.classList.add('shaking');
+  setTimeout(() => doc.classList.remove('shaking'), 500);
+
+  let diagnosis = getDiagnosis(q, input);
+
+  document.getElementById('feedbackBlock').innerHTML = `
+    <div class="feedback-wrong">
+      <div class="fb-label">✗ Inconsistency detected</div>
+      <div class="feedback-text">${diagnosis}</div>
+      <div class="feedback-correct-form" style="margin-top:10px; opacity:0.7">
+        Correct: ${q.stem} ${q.answer[0]}
+      </div>
+    </div>
+  `;
+}
+
+function getDiagnosis(q, input) {
+  if (q.type === 'wh') {
+    // Check for inversion
+    const inversionPatterns = ['did i', 'do i', 'was i', 'have i', 'am i', 'will i', 'can i', 'does'];
+    if (inversionPatterns.some(p => input.includes(p))) {
+      return 'Inversion error: remove the auxiliary. Reported wh-questions use statement word order.';
+    }
+    // Check for wrong tense
+    const presentPatterns = ['i live', 'i leave', 'i know', 'i tell', 'i see', 'i wait'];
+    if (presentPatterns.some(p => input.startsWith(p))) {
+      return 'Tense error: the verb must shift back — present → past.';
+    }
+  }
+  if (q.type === 'yesno') {
+    if (!input.startsWith('i ') && !input.startsWith('whether') && !input.startsWith('if')) {
+      return 'Missing connector or incorrect opening. Yes/no questions need if or whether.';
+    }
+    if (input.includes(' am ') || input.includes(' are ') || input.includes(' is ') || input.includes(' do ') || input.includes(' does ')) {
+      return 'Tense error: present tense must shift to past in reported speech.';
+    }
+  }
+  return 'Account does not match verified record. Review tense and word order.';
+}
+
+function skipQuestion() {
+  if (nextPending) { advanceQuestion(); return; }
+  const q = questions[currentQ];
+  suspicion += 0.5;
+  updateSuspicion();
+  document.getElementById('feedbackBlock').innerHTML = `
+    <div class="feedback-wrong">
+      <div class="fb-label">— Answer shown — suspicion noted</div>
+      <div class="feedback-correct-form" style="margin-top:6px">${q.stem} ${q.answer[0]}</div>
+    </div>
+  `;
+  total++;
+  document.getElementById('totalNum').textContent = total;
+  nextPending = true;
+  document.getElementById('submitBtn').textContent = 'Next →';
+  document.getElementById('responseInput').blur();
+}
+
+let advancing = false;
+
+function advanceQuestion() {
+  if (advancing) return;
+  advancing = true;
+  currentQ++;
+  loadQuestion();
+  updateInstability();
+  advancing = false;
+}
+
+function toggleHint() {
+  hintVisible = !hintVisible;
+  const hc = document.getElementById('hintContent');
+  hc.classList.toggle('visible', hintVisible);
+  document.getElementById('hintToggle').textContent = hintVisible ? '− hide' : '? hint';
+}
+
+function updateSuspicion() {
+  const level = Math.min(Math.floor(suspicion), 5);
+  for (let i = 0; i < 5; i++) {
+    document.getElementById('bar' + i).classList.toggle('filled', i < level);
+  }
+  if (suspicion >= 5) {
+    const stamp = document.getElementById('stampEl');
+    stamp.style.opacity = '0.7';
+  }
+}
+
+function updateInstability() {
+  const doc = document.getElementById('mainDoc');
+  doc.classList.remove('unstable-1', 'unstable-2', 'unstable-3');
+  if (suspicion >= 2) doc.classList.add('unstable-1');
+  if (suspicion >= 3) doc.classList.add('unstable-2');
+  if (suspicion >= 5) doc.classList.add('unstable-3');
+}
+
+function showFinal() {
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('finalScreen').classList.add('visible');
+
+  const pct = total > 0 ? Math.round((score / total) * 100) : 0;
+  let verdict, cls;
+
+  if (pct >= 80) { verdict = 'TESTIMONY ACCEPTED'; cls = 'verdict-cleared'; }
+  else if (pct >= 50) { verdict = 'TESTIMONY PARTIAL'; cls = 'verdict-released'; }
+  else { verdict = 'TESTIMONY REJECTED'; cls = 'verdict-detained'; }
+
+  document.getElementById('verdictDisplay').innerHTML = 
+    `<span class="${cls}">${verdict}</span>`;
+
+  document.getElementById('finalStats').innerHTML = `
+    Accurate responses: <span class="stat-val">${score} / ${total}</span><br>
+    Accuracy rate: <span class="stat-val">${pct}%</span><br>
+    Suspicion accumulated: <span class="stat-val">${Math.floor(suspicion)} / 5</span>
+  `;
+}
+
+function resetGame() {
+  currentQ = 0; score = 0; total = 0; suspicion = 0;
+  document.getElementById('finalScreen').classList.remove('visible');
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('introScreen').style.display = 'block';
+  document.getElementById('stampEl').style.opacity = '0';
+  document.getElementById('mainDoc').className = 'document';
+  for (let i = 0; i < 5; i++) document.getElementById('bar' + i).classList.remove('filled');
+  document.getElementById('scoreNum').textContent = '0';
+  document.getElementById('totalNum').textContent = '0';
+  shuffleQuestions();
+}
+
+// Enter key submits
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    const input = document.getElementById('responseInput');
+    if (document.activeElement === input || nextPending) {
+      checkAnswer();
+    }
+  }
+});
+</script>
+</body>
+</html>
